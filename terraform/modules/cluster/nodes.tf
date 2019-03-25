@@ -59,6 +59,22 @@ resource "aws_security_group" "nodes_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {   
+      from_port = 0
+      to_port = 65535
+      protocol = "tcp"
+      self = true
+      description = "nodes"
+  }    
+
+  ingress {   
+      from_port = 0
+      to_port = 65535
+      protocol = "udp"
+      self = true
+      description = "nodes"
+  }     
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -71,3 +87,23 @@ resource "aws_security_group" "nodes_sg" {
   }
 
 }
+
+resource "aws_security_group_rule" "extra_rule_master_tcp" {
+    security_group_id        = "${aws_security_group.nodes_sg.id}"
+    from_port                = 0
+    to_port                  = 65535
+    protocol                 = "tcp"
+    type                     = "ingress"
+    description              = "master"
+    source_security_group_id = "${aws_security_group.etcd_sg.id}"
+}
+
+// resource "aws_security_group_rule" "extra_rule_master_udp" {
+//     security_group_id        = "${aws_security_group.nodes_sg.id}"
+//     from_port                = 0
+//     to_port                  = 65535
+//     protocol                 = "udp"
+//     type                     = "ingress"
+//     description              = "master"
+//     source_security_group_id = "${aws_security_group.etcd_sg.id}"
+// }
