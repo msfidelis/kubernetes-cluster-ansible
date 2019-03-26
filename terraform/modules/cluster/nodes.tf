@@ -1,7 +1,7 @@
 resource "aws_instance" "nodes-a" {
     count = 1
     ami = "ami-0a313d6098716f372"
-    instance_type = "t2.micro"
+    instance_type = "c4.large"
 
     subnet_id = "${var.public_subnet_1a}"
 
@@ -22,7 +22,7 @@ resource "aws_instance" "nodes-a" {
 resource "aws_instance" "nodes-b" {
     count = 1
     ami = "ami-0a313d6098716f372"
-    instance_type = "t2.micro"
+    instance_type = "c4.large"
 
     subnet_id = "${var.public_subnet_1b}"
 

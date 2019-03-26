@@ -56,10 +56,10 @@
       shell: chown $(id -u):$(id -g) $HOME/.kube/config
 
     - name: Setup Calico. Use log to prevent second installation
-      shell: kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml >> calico_setup.log
+      shell: kubectl -n kube-system apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml >> flannel_setup.log
       args:
         chdir: $HOME
-        creates: calico_setup.log
+        creates: flannel_setup.log
 
     - name: Create token to join cluster
       shell: kubeadm token create --print-join-command
