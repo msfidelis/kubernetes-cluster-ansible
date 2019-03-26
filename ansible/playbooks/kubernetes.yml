@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: tag_Workload_kubernetes
   become: yes
   tasks:
     - name: Get Kubernetes apt-key
@@ -30,3 +30,43 @@
       systemd:
         name: docker
         enabled: yes
+
+- hosts: tag_Role_master
+  become: yes
+  tasks:
+    - name: Initialize Cluster
+      shell: kubeadm init --ignore-preflight-errors=NumCPU >> cluster_init.log
+      args:
+        chdir: $HOME
+        creates: cluster_init.log
+
+    - name: Create .kube directory
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: Setup Calico. Use log to prevent second installation
+      shell: kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml >> calico_setup.log
+      args:
+        chdir: $HOME
+        creates: flannel_setup.log
+
+    - name: Create token to join cluster
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: Set join command as fact
+      set_fact:
+        join_command: "{{ join_command_raw.stdout }}"
+        cacheable: true
+
+- hosts: tag_Role_node
+  become: yes
+  tasks:
+    - name: Join the cluster. Use log to prevent joining twice
+      shell: "{{ join_command }} >> node_join.log"
+      when: join_command is defined
+      args:
+        chdir: $HOME
+        creates: node
