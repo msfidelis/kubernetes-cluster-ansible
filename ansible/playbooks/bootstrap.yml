@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: tag_Workload_kubernetes
   gather_facts: False
   become: true
 
