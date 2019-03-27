@@ -45,7 +45,7 @@
       args:
         chdir: $HOME
         creates: home-created.log
-    
+
     - name: Copy default cluster configuration
       shell: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
       args:
@@ -55,7 +55,7 @@
     - name: change permissions
       shell: chown $(id -u):$(id -g) $HOME/.kube/config
 
-    - name: Setup Calico. Use log to prevent second installation
+    - name: Setup Flannel. Use log to prevent second installation
       shell: kubectl -n kube-system apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml >> flannel_setup.log
       args:
         chdir: $HOME
@@ -74,7 +74,7 @@
   tasks:
 
     - debug: msg="join command is {{ hostvars[groups['tag_Role_master'][0]]['join_command'] }}"
-    
+
     - name: Join the cluster. Use log to prevent joining twice
       shell: "{{ hostvars[groups['tag_Role_master'][0]]['join_command'] }} >> node_join.log"
       # when: join_command is defined
