@@ -34,17 +34,24 @@
 - hosts: tag_Role_master
   become: yes
   tasks:
+
+    - name: change master hostname 
+      hostname:
+        name: "cluster-master"
+
     - name: Initialize Cluster
-      shell: kubeadm init --ignore-preflight-errors=NumCPU >> cluster_init.log
+      shell: kubeadm init --pod-network-cidr 10.244.0.0/16 --ignore-preflight-errors=NumCPU >> cluster_init.log
       args:
         chdir: $HOME
         creates: cluster_init.log
 
     - name: Create .kube directory
-      shell: mkdir -p $HOME/.kube
-      args:
-        chdir: $HOME
-        creates: home-created.log
+      file:
+        path: $HOME/.kube
+        state: directory
+        owner: root
+        group: root
+        mode: 0775
 
     - name: Copy default cluster configuration
       shell: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -73,7 +80,9 @@
   become: yes
   tasks:
 
-    - debug: msg="join command is {{ hostvars[groups['tag_Role_master'][0]]['join_command'] }}"
+    - name: change node hostname 
+      hostname:
+        name: "cluster-node"
 
     - name: Join the cluster. Use log to prevent joining twice
       shell: "{{ hostvars[groups['tag_Role_master'][0]]['join_command'] }} >> node_join.log"

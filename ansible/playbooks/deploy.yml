@@ -1,0 +1,5 @@
+- hosts: tag_Role_master
+  become: yes
+  tasks:
+    - name: Copy deploy yaml
+      shell: ls -lhs
