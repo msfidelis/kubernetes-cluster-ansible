@@ -35,9 +35,9 @@
   become: yes
   tasks:
 
-    - name: change master hostname 
-      hostname:
-        name: "cluster-master"
+    # - name: change master hostname 
+    #   hostname:
+    #     name: "cluster-master"
 
     - name: Initialize Cluster
       shell: kubeadm init --pod-network-cidr 10.244.0.0/16 --ignore-preflight-errors=NumCPU >> cluster_init.log
@@ -80,9 +80,9 @@
   become: yes
   tasks:
 
-    - name: change node hostname 
-      hostname:
-        name: "cluster-node"
+    # - name: change node hostname
+    #   hostname:
+    #     name: "cluster-node"
 
     - name: Join the cluster. Use log to prevent joining twice
       shell: "{{ hostvars[groups['tag_Role_master'][0]]['join_command'] }} >> node_join.log"

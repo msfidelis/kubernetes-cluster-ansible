@@ -14,7 +14,7 @@
         state: present
       vars:
         packages:
-          - unzip     
+          - unzip
 
     - name: Download package kubernetes-state
       shell: cd /tmp && curl -o kube-state-metrics-1.4.zip https://codeload.github.com/kubernetes/kube-state-metrics/zip/release-1.4
