@@ -2,3 +2,12 @@
   become: yes
   tasks:
 
+    - template:
+        src: ./templates/api-deploy.yml
+        dest: /tmp/api-deploy.yml
+        owner: root
+        group: root
+        mode: 0775
+
+    - name: Deploy Newrelic Infrastructure Agent
+      shell: kubectl apply -f /tmp/api-deploy.yml
