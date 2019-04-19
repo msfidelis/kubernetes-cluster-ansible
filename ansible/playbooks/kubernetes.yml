@@ -25,19 +25,39 @@
           - kubelet
           - kubeadm
 
+    - template:
+        src: ./templates/daemon.json
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: 0775
+
+    - file:
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+
+    - name: Daemon Reload
+      shell: systemctl daemon-reload
+
     # Docker service is disabled by default
     - name: enable Docker service
       systemd:
         name: docker
         enabled: yes
 
+    - name: Remove swapfile from /etc/fstab
+      mount:
+        name: swap
+        fstype: swap
+        state: absent
+
+    - name: Disable swap
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
+
 - hosts: tag_Role_master
   become: yes
   tasks:
-
-    # - name: change master hostname 
-    #   hostname:
-    #     name: "cluster-master"
 
     - name: Initialize Cluster
       shell: kubeadm init --pod-network-cidr 10.244.0.0/16 --ignore-preflight-errors=NumCPU >> cluster_init.log
@@ -75,6 +95,12 @@
 
     - name: Set join command as fact
       set_fact: join_command="{{ join_command_raw.stdout }}"
+
+    - name: Pull default images
+      shell: kubeadm config images pull
+      args:
+        chdir: $HOME
+        creates: images_pull.log
 
 - hosts: tag_Role_node
   become: yes
