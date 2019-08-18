@@ -38,3 +38,17 @@ resource "aws_instance" "nodes-b" {
         Role = "node"
     }
 }
+
+resource "aws_lb_target_group_attachment" "nodes_a" {
+    count = "${aws_instance.nodes-a.count}"
+    target_group_arn = "${aws_alb_target_group.app_target_group.arn}"
+    target_id        = "${element(split(",", join(",", aws_instance.nodes-a.*.id)), count.index)}"
+    port             = 30001
+}
+
+resource "aws_lb_target_group_attachment" "nodes_b" {
+    count = "${aws_instance.nodes-b.count}"
+    target_group_arn = "${aws_alb_target_group.app_target_group.arn}"
+    target_id        = "${element(split(",", join(",", aws_instance.nodes-b.*.id)), count.index)}"
+    port             = 30001
+}

@@ -1,0 +1,36 @@
+# Install Ansible and Kubernetes
+- hosts: tag_Workload_kubernetes
+  gather_facts: False
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    - { role: bootstrap }
+    - { role: kubernetes }
+
+# Configure Master Nodes
+- hosts: tag_Role_master
+  gather_facts: True
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    - { role: masters }
+
+# Configure Nodes
+- hosts: tag_Role_node
+  gather_facts: True
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    - { role: nodes }
+
+- hosts: tag_Role_master
+  gather_facts: True
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  roles:
+    # - { role: newrelic }
+    # - { role: istio }
