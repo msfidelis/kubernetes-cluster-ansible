@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to Kubernetes Cluster Bootstrap 👋</h1>
+<h1 align="center">Kubernetes Cluster Bootstrap 👋</h1>
 <p>
   <img src="https://img.shields.io/badge/version-0.0.1-blue.svg?cacheSeconds=2592000" />
   <a href="https://twitter.com/fidelissauro">
@@ -6,7 +6,9 @@
   </a>
 </p>
 
-> Complete Kubernete Clusteron AWS using Terraform and Ansible 
+![Arch](.github/images/logo.png)
+
+> Complete Kubernete Cluster on AWS using Terraform and Ansible with Dynamic Inventory
 
 ## Run tests
 
@@ -45,7 +47,7 @@ ansible-playbook playbooks/k8s-cluster-aws.yml
 
 ## Deploy a Example Application for testing
 
-
+`Deployment release with roles/deployment-rolling`
 
 ```sh
 ansible-playbook playbooks/deploy.yml
