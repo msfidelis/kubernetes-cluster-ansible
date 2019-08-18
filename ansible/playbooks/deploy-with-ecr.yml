@@ -1,0 +1,24 @@
+- template:
+    src: ./templates/deploy.yml
+    dest: /tmp/deploy-rest-api.yml
+    owner: root
+    group: root
+    mode: 0777
+
+- name: Login to ECR
+  shell: DOCKER_REGISTRY_SERVER=https://${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com \
+    DOCKER_USER=AWS \
+    OCKER_PASSWORD=`aws ecr get-login --region ${AWS_REGION} --registry-ids ${AWS_ACCOUNT} | cut -d' ' -f6`
+    kubectl delete secret aws-registry || true \
+    kubectl create secret docker-registry aws-registry \
+    --docker-server=$DOCKER_REGISTRY_SERVER \
+    --docker-username=$DOCKER_USER \
+    --docker-password=$DOCKER_PASSWORD \
+    --docker-email=no@email.local
+
+- name: Create service login
+  shell: kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"aws-registry"}]}'
+
+- name: Create a forced deploy on dumb mode kkkk
+  shell: kubectl replace --force -f /tmp/deploy-rest-api.yml
+

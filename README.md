@@ -8,22 +8,47 @@
 
 > Complete Kubernete Clusteron AWS using Terraform and Ansible 
 
-## Install
-
-```sh
-terrraform init
-```
-
-## Usage
-
-```sh
-terraform apply
-```
-
 ## Run tests
 
 ```sh
 terraform plan
+```
+
+## Terraform Provisioning on AWS
+
+```sh
+cd terraform/
+terraform init
+terraform apply
+```
+
+## Configure cluster using Ansible Dynamic Inventory
+
+### Edit ansible.cfg
+
+```ini
+[defaults]
+# Incluce ec2.py inventory
+inventory = ./inventory/ec2.py
+host_key_checking=false
+deprecation_warnings=False
+ansible_ssh_user=ubuntu
+# Configure access key if necessary
+ansible_ssh_private_key_file = "~/.ssh/id_rsa.pub"
+```
+
+### Apply ansible-playbook
+
+```sh
+ansible-playbook playbooks/k8s-cluster-aws.yml
+```
+
+## Deploy a Example Application for testing
+
+
+
+```sh
+ansible-playbook playbooks/deploy.yml
 ```
 
 ## Author

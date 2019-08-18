@@ -1,3 +1,3 @@
-// output "alb-endpoint" {
-//   value = "${module.ecs.alb}"
-// }
+output "alb-endpoint" {
+  value = "${module.cluster.alb_endpoint}"
+}

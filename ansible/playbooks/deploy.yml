@@ -1,13 +1,8 @@
+# Install Ansible and Kubernetes
 - hosts: tag_Role_master
+  gather_facts: True
+  remote_user: ubuntu
   become: yes
-  tasks:
-
-    - template:
-        src: ./templates/api-deploy.yml
-        dest: /tmp/api-deploy.yml
-        owner: root
-        group: root
-        mode: 0775
-
-    - name: Deploy Newrelic Infrastructure Agent
-      shell: kubectl apply -f /tmp/api-deploy.yml
+  become_user: root
+  roles:
+    - { role: deploy-rolling }

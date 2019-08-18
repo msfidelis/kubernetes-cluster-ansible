@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: micro-api
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: micro-api
+    spec:
+      containers:
+      - name: micro-api
+        image: msfidelis/micro-api:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: micro-api
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      nodePort: 30001
+  selector:
+    app: micro-api

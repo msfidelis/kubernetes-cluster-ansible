@@ -1,0 +1,54 @@
+# Uncomment this if using ECR
+# - name: Login to ECR
+#   shell: $(aws ecr get-login --no-include-email --region us-east-1)
+
+- name: Initialize Cluster
+  shell: kubeadm init --pod-network-cidr 10.244.0.0/16 --ignore-preflight-errors=NumCPU >> cluster_init.log
+  args:
+    chdir: $HOME
+    creates: cluster_init.log
+
+- name: Create .kube directory
+  file:
+    path: $HOME/.kube
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Copy default cluster configuration
+  shell: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  args:
+    chdir: $HOME
+    creates: $HOME/.kube/config
+
+# - name: change permissions
+#   shell: chown $(id -u):$(id -g) $HOME/.kube/config
+
+- file:
+    path: $HOME/.kube/config
+    state: file
+    owner: root
+    group: root
+    mode: 0660
+
+- name: Setup Flannel. Use log to prevent second installation
+  shell: kubectl -n kube-system apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml >> flannel_setup.log
+  args:
+    chdir: $HOME
+    creates: flannel_setup.log
+
+- template:
+    src: ./templates/configs/kubelet-config.yml
+    dest: /var/lib/kubelet/config.yaml
+    owner: root
+    group: root
+    mode: 0777
+
+- name: Create token to join cluster
+  shell: kubeadm token create --print-join-command
+  register: join_command_raw
+- debug: msg="join command is {{ join_command_raw.stdout }}"
+
+- name: Set join command as fact
+  set_fact: join_command="{{ join_command_raw.stdout }}"

@@ -1,0 +1,9 @@
+- template:
+    src: ./templates/deployment.yml
+    dest: /tmp/api-deploy.yml
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Create a rolling release deployment
+  shell: kubectl apply --force -f /tmp/api-deploy.yml
